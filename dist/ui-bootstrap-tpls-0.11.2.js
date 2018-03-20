@@ -2685,7 +2685,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                     return;
                 }
                 // make sure the tooltip/popover link or tool tooltip/popover itself were not clicked
-                if (!element.contains(e.target) && !tooltip[0].contains(e.target)) {
+                if (!element[0].contains(e.target) && !tooltip[0].contains(e.target)) {
                     hideTooltipBind();
                 }
             }
@@ -2704,7 +2704,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
                 if (triggers.hide === 'outsideClick')
                 {
-                    $document[0].unbind( 'click', bodyHideTooltipBind );
+                    $document.unbind( 'click', bodyHideTooltipBind );
                 }
                 else
                 {
@@ -2720,7 +2720,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               if (triggers.show === 'outsideClick')
               {
                   element.bind( 'click', toggleTooltipBind );
-                  $document[0].bind( 'click', bodyHideTooltipBind );
+                  $document.bind( 'click', bodyHideTooltipBind );
               }
               else if ( triggers.show === triggers.hide ) {
                 element.bind( triggers.show, toggleTooltipBind );
