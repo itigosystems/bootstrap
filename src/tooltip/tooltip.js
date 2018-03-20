@@ -21,6 +21,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
   var triggerMap = {
     'mouseenter': 'mouseleave',
     'click': 'click',
+    'outsideClick': 'outsideClick',
     'focus': 'blur'
   };
 
@@ -269,9 +270,37 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               scope.tt_popupDelay = ! isNaN(delay) ? delay : options.popupDelay;
             });
 
+            // hide tooltips/popovers for outsideClick trigger
+            function bodyHideTooltipBind(e) {
+                if (!scope.tt_isOpen || !tooltip) {
+                    return;
+                }
+                // make sure the tooltip/popover link or tool tooltip/popover itself were not clicked
+                if (!element.contains(e.target) && !tooltip[0].contains(e.target)) {
+                    hideTooltipBind();
+                }
+            }
+
             var unregisterTriggers = function () {
-              element.unbind(triggers.show, showTooltipBind);
-              element.unbind(triggers.hide, hideTooltipBind);
+
+                if (triggers.show === 'outsideClick')
+                {
+                    element.unbind('click', toggleTooltipBind);
+                }
+                else
+                {
+                    element.unbind(triggers.show, showTooltipBind);
+                    element.unbind(triggers.show, toggleTooltipBind);
+                }
+
+                if (triggers.hide === 'outsideClick')
+                {
+                    $document[0].unbind( 'click', bodyHideTooltipBind );
+                }
+                else
+                {
+                    element.unbind(triggers.hide, hideTooltipBind);
+                }
             };
 
             attrs.$observe( prefix+'Trigger', function ( val ) {
@@ -279,7 +308,12 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
               triggers = getTriggers( val );
 
-              if ( triggers.show === triggers.hide ) {
+              if (triggers.show === 'outsideClick')
+              {
+                  element.bind( 'click', toggleTooltipBind );
+                  $document[0].bind( 'click', bodyHideTooltipBind );
+              }
+              else if ( triggers.show === triggers.hide ) {
                 element.bind( triggers.show, toggleTooltipBind );
               } else {
                 element.bind( triggers.show, showTooltipBind );
